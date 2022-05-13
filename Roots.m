@@ -20,7 +20,8 @@ for i = 1 : m
 
   options = optimset('TolX',10^-2,'MaxIter',300,'TolFun',10^-2,'Display','off');
 
-  [root(i,:), fval, exitflag, output] = fsolve(g1,norm(x_failure(i,:)),options);  % find root 
+%   [root(i,:), fval, exitflag, output] = fsolve(g1,norm(x_failure(i,:)),options);  % find root 
+   [root(i,:), fval, exitflag, output] = fsolve(g1,0,options);  % find root 
 
   x_root(i,:) = (v*[root(i,:) zeros(1,n-1)]')';  % compute the input parameter on the limit state surface corresponding the root 
 

@@ -38,7 +38,7 @@ while n_failure < nf                % sequential enrichment of initial MCS popul
 
    if y(n) < 0
 
-     [model_run, x_f, root_f] = Roots(x(n,:),g,sig);   % find the roots of the failure samples
+      [model_run, x_f, root_f] = Roots(x(n,:),g,sig);   % find the roots of the failure samples
     
       model_evaluation = model_evaluation + model_run;  % update computational cost
 
@@ -47,16 +47,15 @@ while n_failure < nf                % sequential enrichment of initial MCS popul
          n_failure           = n_failure + 1;
          x_root(n_failure,:) = x_f;
          root(n_failure,:)   = root_f;
+         x_failure(n_failure,:) = x(n,:);    % failure samples
 
       end
    end
 end
 
-pf1       = n_failure/n;          % estimation of P_1 with MCS
-cov1      = sqrt((1-pf1)/n/pf1);  % coefficient of variation of P_1
-ind       = find( y < 0);         % find failure samples
-x_failure = x(ind ,:);            % failure samples
-model_evaluation = model_evaluation + n; % update computational cost
+pf1       = length(find( y < 0))/n;          % estimation of P_1 with MCS
+cov1      = sqrt((1-pf1)/n/pf1);             % coefficient of variation of P_1       
+model_evaluation = model_evaluation + n;     % update computational cost
 
 %% Sequential reduction of Sigma
 
@@ -65,9 +64,12 @@ optimal_sig = sig;
 k = 1;
 
 while optimal_sig > 1
-     
-  fun = @(x)abs(std((1-chi2cdf((sig(k)./x.*root).^2,d))./(1-chi2cdf((root).^2,d)))./...     % target function 
-             mean((1-chi2cdf((sig(k)./x.*root).^2,d))./(1-chi2cdf((root).^2,d)))- tarWk);           
+  
+  
+  ind = find((1-chi2cdf((root).^2,d)) == 0);  root1 = root;  root1(ind) = [];
+
+  fun = @(x)abs(std((1-chi2cdf((sig(k)./x.*root1).^2,d))./(1-chi2cdf((root1).^2,d)))./...     % target function 
+             mean((1-chi2cdf((sig(k)./x.*root1).^2,d))./(1-chi2cdf((root1).^2,d)))- tarWk);           
 
   options = optimoptions('fmincon','Display','off');            
   optimal_sig = fmincon(fun,1,[],[],[],[],1,sig(k),[],options);  % find optimal sigma
@@ -79,7 +81,7 @@ while optimal_sig > 1
 
  k = k + 1;  sig(k) = optimal_sig;
   
- wk = (1-chi2cdf((sig(k-1)./optimal_sig.*root).^2,d))./(1-chi2cdf((root).^2,d));   % Compute the importance weight
+ wk = (1-chi2cdf((sig(k-1)./optimal_sig.*root1).^2,d))./(1-chi2cdf((root1).^2,d));   % Compute the importance weight
 
  wk(find(isnan(wk) == 1)) = [];   
  sk(k-1) = mean(wk);                              % mean of importance weight 

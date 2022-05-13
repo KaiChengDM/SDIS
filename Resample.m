@@ -3,10 +3,11 @@ function seeds = Resample(x_root, root, sig, k, d, nchain)
 
 %% Resample for important directions
 
- wnork       = (1-chi2cdf((sig(k-1)./sig(k).*root).^2,d))./(1-chi2cdf(root.^2,d));   % weight
+ ind = find((1-chi2cdf((root).^2,d)) == 0);  root1 = root;  root1(ind) = [];
+ wnork       = (1-chi2cdf((sig(k-1)./sig(k).*root1).^2,d))./(1-chi2cdf(root1.^2,d));   % weight
  nsamlev     = length(wnork);                          % number of samples
  ind         = randsample(nsamlev,nchain,true,wnork);  % resampling of directions 
- root_accept = root(ind,:);                            % accepted roots along important directions
+ root_accept = root1(ind,:);                            % accepted roots along important directions
 
 %% Resample of radius
 
