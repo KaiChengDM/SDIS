@@ -1,6 +1,6 @@
 # SDIS
 
-Matlab code of paper: 
+Matlab package of paper: 
 Kai Cheng, Iason Papaioannou, Zhenzhou Lu, Xiaobo Zhang, Yanping Wang,
 Rare event estimation with sequential directional importance sampling,
 Structural Safety,
